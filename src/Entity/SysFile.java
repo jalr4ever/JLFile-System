@@ -1,6 +1,5 @@
 package Entity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -11,18 +10,23 @@ import java.util.HashSet;
  */
 public class SysFile {
 
-    private String filename;
+    private String fileName;
     private String fileDateTime;
     private String fileType;
     private int shareCounter = 0;
     private String fileData;
+    private int firstBlockNum = -1;
     private HashSet<String> owners;
-    public String getFilename() {
-        return filename;
+    private String filePath;
+    private FCB_List folderFather; //上一级目录
+    private int fileSize = 0;                   //记录占用多少个磁盘块，一开始默认是 0
+
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getFileDateTime() {
@@ -66,4 +70,35 @@ public class SysFile {
         this.owners.add(ownersName);
     }
 
+    public int getFirstBlockNum() {
+        return firstBlockNum;
+    }
+
+    public void setFirstBlockNum(int firstBlockNum) {
+        this.firstBlockNum = firstBlockNum;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public FCB_List getFolderFather() {
+        return folderFather;
+    }
+
+    public void setFolderFather(FCB_List folderFather) {
+        this.folderFather = folderFather;
+    }
+
+    public int getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(int fileSize) {
+        this.fileSize = fileSize;
+    }
 }

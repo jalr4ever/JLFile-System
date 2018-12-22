@@ -6,7 +6,7 @@ package Entity;
  * <p>
  * Created by Jalr on 2018/12/21.
  */
-public class User {
+public class User extends FCB_List{
 
     //这里的用户是个顶级的特殊目录，对普通用户不可见
     private String userAccount;

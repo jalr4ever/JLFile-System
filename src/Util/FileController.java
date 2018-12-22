@@ -1,47 +1,22 @@
 package Util;
 
-import Entity.BitMap;
-import Entity.SysFile;
+import Entity.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
+import java.util.Iterator;
+import java.util.Map;
 
 import static Entity.BitMap.bitmap_height;
 import static Entity.BitMap.bitmap_width;
 
-/**
- * @program: JLFile-OS
- * @description: Controller for file operation include create、delete、open、update.
- * <p>
- * Created by Jalr on 2018/12/21.
- */
 public class FileController {
 
-    private static FileController fileController = new FileController();
-    private static String currentPath = "假装C:/users/loubth";
-
-    private FileController() {
-    }
-
-    public static FileController getFileController() {
-        return fileController;
-    }
-
-    //创建并初始化位示图
-    BitMap bitMap = new BitMap();
 
 
-    public void start() {
-        System.out.print(currentPath + ">");
-        Scanner scanner = new Scanner(System.in);
-        String cmd = scanner.nextLine();
-        System.out.println(cmd);
-    }
+    public void createFile(String fileName, String fileData, String filePath, FCB_List fatherFolder, FAT fat_table, BitMap bitMap) {
 
-
-    public void createFile() {
-        //创建当前的日期
+        //0.创建当前的日期
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH: mm: ss");
         String currentTime = sdf.format(date);
@@ -49,49 +24,71 @@ public class FileController {
         System.out.println("创建一个新的文件，请依次输入以下的信息然后回车！");
 
 
-        //输入文件的一些基本信息
-        Scanner scan = new Scanner(System.in);
+        //1.创建文件，并输入文件的信息
         SysFile newfile = new SysFile();
         System.out.print("文件名：");
-        newfile.setFilename(scan.nextLine());
-        System.out.println();
+        newfile.setFileName(fileName);
+        System.out.println(fileName);
         newfile.setFileDateTime(currentTime);
         newfile.setFileType("普通文件");
 //        newfile.setOwners(//这里是 输入Username，还没创建先不写);
+        newfile.setFirstBlockNum(checkBitMap(bitMap));//这里是第一次调用 checkBitMap ，那么就是该文件的首块号
+        newfile.setFilePath(filePath);
+        newfile.setFolderFather(fatherFolder); //文件的父目录
         System.out.print("文件数据：");
-        newfile.setFileData(scan.nextLine());
-
+        newfile.setFileData(fileData);
         System.out.println("创建中......");
 
-        //给文件分配空闲磁盘块
+        //2.给文件分配空闲磁盘块
         int fileLength = newfile.getFileData().length();
         int fileSize = fileLength / bitMap.getFile_block_size();
         if ((fileLength % bitMap.getFile_block_size()) != 0) {
             fileSize++;
         }
 
-        //查找位示图的空闲块
+        //3.查找位示图的空闲块, 更新相应的位示图与FAT表
         while (fileSize > 0) {
-            int availDiskNum = checkBitMap();
+            int availDiskNum = checkBitMap(bitMap);
             int row = availDiskNum / bitMap.getDisk_block_num();
             int column = availDiskNum % bitMap.getDisk_block_num();
-
             try {
                 bitMap.updateBitMap(row, column);//更新位示图
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            int nextAvailDiskNum = checkBitMap(bitMap);
+            if (fileSize == 1) {
+                fat_table.updateFileAllocateTable(availDiskNum, -1);//更新 FAT , 最后一个表示 -1
+            } else {
+                fat_table.updateFileAllocateTable(availDiskNum, nextAvailDiskNum);//更新 FAT , 用现在的号，链接到下一个号
+            }
             fileSize--;
-            showBitMap();
+            /*----打印位示图测试一下---*/
+            showBitMap(bitMap);
+            System.out.println("\n-------\n");
+
+            /*----打印FAT测试一下---*/
+            showFAT(fat_table);
             System.out.println("\n-------\n");
         }
 
+        //4.给文件分配默认的目录项
+        fatherFolder.addFile(newfile);
         System.out.println("创建文件成功！");
 
     }
 
-    public void showBitMap() {
+    public void deleteFile(String fileName, FCB_List fatherFolder, FAT fat_table, BitMap bitMap) {
+
+        //1.找到当前目录下要删除的文件物理位置
+        SysFile _deletefile = fatherFolder.searchFileByName(fileName);
+
+        //2.回收该文件的盘块号，更新位示图
+
+
+    }
+
+    public void showBitMap(BitMap bitMap) {
         for (int i = 0; i < bitmap_width; i++) {
             for (int j = 0; j < bitmap_height; j++) {
                 System.out.print(bitMap.getBitmap()[i][j] + "   \t");
@@ -100,7 +97,18 @@ public class FileController {
         }
     }
 
-    public int checkBitMap() {
+    public void showFAT(FAT fat_table) {
+        System.out.println("物理块号\t" + "下一块号");
+        Iterator iterator = fat_table.getFile_allocate_table().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            Object blockNum = entry.getKey();
+            Object nextBlockNum = entry.getValue();
+            System.out.println(blockNum.toString() + "\t\t\t" + nextBlockNum.toString());
+        }
+    }
+
+    public int checkBitMap(BitMap bitMap) {
         for (int i = 0; i < bitmap_width; i++) {
             for (int j = 0; j < bitmap_height; j++) {
                 if (bitMap.getBitmap()[i][j] == 0) {
@@ -110,6 +118,5 @@ public class FileController {
         }
         return -1; //代表没有可用的
     }
-
 
 }

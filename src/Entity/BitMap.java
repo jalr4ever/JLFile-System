@@ -11,7 +11,7 @@ package Entity;
 public class BitMap {
 
     private int disk_block_num = 1024;          //磁盘块数
-    private int disk_block_size = 1024;            //每一块磁盘块大小 1 kb, 即 1024 b
+    public static final int disk_block_size = 1024;            //每一块磁盘块大小 1 kb, 即 1024 b
     private int file_block_size = 5;                    //每个文件数据块可用存 5 个长度的文件，而一个文件数据块就是 1Kb
     public static final int bitmap_width = 32;
     public static final int bitmap_height = 32;
@@ -23,10 +23,6 @@ public class BitMap {
 
     public int[][] getBitmap() {    //返回一个指定为 32 x 32 大小的二维数组
         return bitmap;
-    }
-
-    public int getDisk_block_size() {
-        return disk_block_size;
     }
 
     public int getDisk_block_num() {
