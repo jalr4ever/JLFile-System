@@ -21,23 +21,17 @@ public class FileController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH: mm: ss");
         String currentTime = sdf.format(date);
 
-        System.out.println("创建一个新的文件，请依次输入以下的信息然后回车！");
-
 
         //1.创建文件，并输入文件的信息
         SysFile newfile = new SysFile();
-        System.out.print("文件名：");
         newfile.setFileName(fileName);
-        System.out.println(fileName);
         newfile.setFileDateTime(currentTime);
         newfile.setFileType("普通文件");
 //        newfile.setOwners(//这里是 输入Username，还没创建先不写);
         newfile.setFirstBlockNum(checkBitMap(bitMap));//这里是第一次调用 checkBitMap ，那么就是该文件的首块号
         newfile.setFilePath(filePath);
         newfile.setFolderFather(fatherFolder); //文件的父目录
-        System.out.print("文件数据：");
         newfile.setFileData(fileData);
-        System.out.println("创建中......");
 
         //2.给文件分配空闲磁盘块
         int fileLength = newfile.getFileData().length();
@@ -65,18 +59,17 @@ public class FileController {
                 fat_table.updateFileAllocateTable(availDiskNum, nextAvailDiskNum);//更新 FAT , 用现在的号，链接到下一个号
             }
             fileSize--;
-            /*----打印位示图测试一下---*/
-            showBitMap(bitMap);
-            System.out.println("\n-------\n");
-
-            /*----打印FAT测试一下---*/
-            showFAT(fat_table);
-            System.out.println("\n-------\n");
+//            /*----打印位示图测试一下---*/
+//            showBitMap(bitMap);
+//            System.out.println("\n-------\n");
+//
+//            /*----打印FAT测试一下---*/
+//            showFAT(fat_table);
+//            System.out.println("\n-------\n");
         }
 
         //4.给文件分配默认的目录项
         fatherFolder.addFile(newfile);
-        System.out.println("创建文件成功！");
 
     }
 
@@ -101,7 +94,7 @@ public class FileController {
                 bitMap.updateBitMap(row, column);
                 fileFirstBlock = fileNextBlock;//更新物理块号
                 fileNextBlock = fat_table.searchNextBlock(fileNextBlock); //更新 "下一块"物理块号
-                if(fat_table.searchNextBlock(fileFirstBlock) == null){//当前物理块号为 -1时，下一块号为空，那么退出
+                if (fat_table.searchNextBlock(fileFirstBlock) == null) {//当前物理块号为 -1时，下一块号为空，那么退出
                     break;
                 }
                 row = fileFirstBlock / disk_block_size;
@@ -116,11 +109,25 @@ public class FileController {
         //3.在对应的文件夹下删除文件
         fatherFolder.deleteFile(_deletefile);
 
-        System.out.println("\n --- 删除后的位示图 ---\n");
-        showBitMap(bitMap);
+//        System.out.println("\n --- 删除后的位示图 ---\n");
+//        showBitMap(bitMap);
+//
+//        System.out.println("\n --- 删除后的FAT表 ---\n");
+//        showFAT(fat_table);
 
-        System.out.println("\n --- 删除后的FAT表 ---\n");
-        showFAT(fat_table);
+    }
+
+    //打开文件
+    public String openFile(String fileName, FCB_List fatherFolder) {
+        SysFile _openFile = fatherFolder.searchFileByName(fileName);
+        String _fileData = _openFile.getFileData();
+        return _fileData;
+    }
+
+    //修改文件名字
+    public void updateFileName(String fileName, FCB_List fatherFolder,String newName) {
+        SysFile _updateFile = fatherFolder.searchFileByName(fileName);
+        _updateFile.setFileName(newName);
     }
 
     public void showBitMap(BitMap bitMap) {

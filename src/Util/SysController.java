@@ -72,14 +72,19 @@ public class SysController {
                 processShowBitMap(param);
             } else if (param[0].equals("cf")) {     //创建文件
                 processCreateFile(param);
+            } else if (param[0].equals("of")) {     //打开文件
+                processOpenFile(param);
+            } else if (param[0].equals("mfn")) {     //更改文件名
+                processModifyFileName(param);
             } else if (param[0].equals("del")) {     //删除文件
                 processDeleteFile(param);
-            }else if (param[0].equals("cd")) {     //改变目录
+            } else if (param[0].equals("cd")) {     //进入目标目录
                 processChangeDir(param);
-            }else if (param[0].equals("cdir")) {      //创建目录
+            } else if (param[0].equals("mdn")) {     //更改文件夹名称
+                processModifyFolderName(param);
+            } else if (param[0].equals("cdir")) {      //创建目录
                 processCreateDir(param);
-            }
-            else if (param[0].equals("deldir")) {     //删除目录
+            } else if (param[0].equals("deldir")) {     //删除目录
                 processDeleteDir(param);
             } else if (param[0].equals("ls")) {   //显示当前目录下的文件和文件夹
                 processList(param);
@@ -233,7 +238,7 @@ public class SysController {
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
                 printBlank("CDIR folderName", "创建名字为folderName(不超过25个字符)的文件夹");
-            } else if (param[1].getBytes().length>25) {
+            } else if (param[1].getBytes().length > 25) {
                 printBlank("指定的文件夹名称超出规定长度，请更换名称", null);
             } else {
                 if (_currentPath.searchFCB_ListByName(param[1]) == null) {
@@ -247,6 +252,29 @@ public class SysController {
         }
     }
 
+    //修改文件夹名称
+    private void processModifyFolderName(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("MDN folderName", "修改名字为folderName的文件夹的名称");
+            } else {
+                FCB_List folder=_currentPath.searchFCB_ListByName(param[1]);
+                if (folder != null) {
+                    System.out.println("请输入新文件夹名称：");
+                    String newFolderName = scanner.nextLine();
+                    fcbController.updateFolderName(folder.getFcb_list_name(),folder.getFatherFolder(),newFolderName);
+                } else {
+                    printBlank("指定名字的文件夹不存在，请检查文件夹名称是否输入正确", null);
+                }
+            }
+        } else {
+            printBlank("MDN需要一个文件夹名称参数指定文件夹", null);
+        }
+
+    }
+
     //删除文件夹
     private void processDeleteDir(String[] param) {
         if (param.length > 2) {
@@ -254,10 +282,10 @@ public class SysController {
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
                 printBlank("DELDIR folderName", "删除名字为folderName的文件夹");
-            }else {
+            } else {
                 if (_currentPath.searchFCB_ListByName(param[1]) != null) {
-                    String folderName=param[1];
-                    fcbController.deleteFolder(folderName,_currentPath,file_allocate_table,bitMap);
+                    String folderName = param[1];
+                    fcbController.deleteFolder(folderName, _currentPath, file_allocate_table, bitMap);
 
                 } else {
                     printBlank("该文件夹下没有您指定的文件夹，请检查文件夹名是否输入正确", null);
@@ -275,9 +303,9 @@ public class SysController {
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
                 printBlank("CF fileName", "创建名字为fileName(不超过25个字符)的文本文件，并等待输入内容,输入:end结束内容");
-            } else if (param[1].getBytes().length>25) {
+            } else if (param[1].getBytes().length > 25) {
                 printBlank("指定的文件名称超出规定长度，请更换名称", null);
-            }else {
+            } else {
                 if (_currentPath.searchFileByName(param[1]) == null) {
                     System.out.println("请开始输入文件内容,输入:end结束内容");
                     StringBuilder sb = new StringBuilder();
@@ -289,13 +317,58 @@ public class SysController {
 
                     //等待调用创建文件函数
                     fileController.createFile(param[1], sb.toString(), currentPath, _currentPath, file_allocate_table, bitMap);
-                    System.out.println(sb.toString());
                 } else {
                     printBlank("该名称已被占用，请更换名称重新创建文件", null);
                 }
             }
         } else {
             printBlank("CF需要一个参数作为文件名", null);
+        }
+
+    }
+
+
+    //打开文件
+    private void processOpenFile(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("OF fileName", "打开名字为fileName的文本文件");
+            } else {
+                SysFile file=_currentPath.searchFileByName(param[1]);
+                if (file != null) {
+                    String fileContent = fileController.openFile(file.getFileName(),file.getFolderFather());
+                    System.out.println(fileContent);
+                } else {
+                    printBlank("指定名字的文件不存在，请检查文件名是否输入正确", null);
+                }
+            }
+        } else {
+            printBlank("OF需要一个参数作为文件名", null);
+        }
+
+    }
+
+    //修改文件名
+    private void processModifyFileName(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("MFN fileName", "修改名字为fileName的文本文件的名称");
+            } else {
+                SysFile file=_currentPath.searchFileByName(param[1]);
+                if (file != null) {
+                    System.out.println("请输入新文件名：");
+                    String newFileName = scanner.nextLine();
+                    fileController.updateFileName(file.getFileName(),file.getFolderFather(),newFileName);
+                } else {
+                    printBlank("指定名字的文件不存在，请检查文件名是否输入正确", null);
+                }
+            }
+        } else {
+            printBlank("MFN需要一个文件名参数指定文件", null);
         }
 
     }
@@ -308,10 +381,10 @@ public class SysController {
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
                 printBlank("DEL fileName", "删除名字为fileName的文本文件");
-            }else {
+            } else {
                 if (_currentPath.searchFileByName(param[1]) != null) {
-                    String fileName=param[1];
-                    fileController.deleteFile(fileName, _currentPath, file_allocate_table,bitMap);
+                    String fileName = param[1];
+                    fileController.deleteFile(fileName, _currentPath, file_allocate_table, bitMap);
 
                 } else {
                     printBlank("该文件夹下没有您指定的文件，请检查文件名是否输入正确", null);
@@ -354,10 +427,13 @@ public class SysController {
         printBlank("SF", "显示fat表");
         printBlank("SB", "显示位视图");
         printBlank("CF fileName", "创建名字为fileName(不超过25个字符)的文本文件");
+        printBlank("OF fileName", "打开名字为fileName的文本文件");
+        printBlank("MFN fileName", "修改名字为fileName的文本文件的名称");
         printBlank("DEL fileName", "删除名字为fileName的文本文件");
         printBlank("CDIR folderName", "创建名字为folderName(不超过25个字符)的文件夹");
-        printBlank("DELDIR folderName", "删除名字为folderName的文件夹");
         printBlank("CD folderName", "进入名字为folderName的文件夹");
+        printBlank("MDN folderName", "修改名字为folderName的文件夹的名称");
+        printBlank("DELDIR folderName", "删除名字为folderName的文件夹");
         printBlank("LS", "显示当前文件夹下的所有文件");
     }
 

@@ -11,8 +11,10 @@ import java.util.Iterator;
 
 
 public class FCBController {
+
     FileController fileController = new FileController();
 
+    //更新目录
     public FCB_List ceateFolder(String folderName, String folderPath, FCB_List fatherFolder) {
         //0.创建当前的日期
         Date date = new Date();
@@ -31,7 +33,7 @@ public class FCBController {
 
     //删除目录，如果目录下有文件夹，需要判断文件里是否有文件，有的话要一个个删除
     public void deleteFolder(String folderName, FCB_List fatherFolder, FAT fat_table, BitMap bitMap) {
-        System.out.println("准备删除： " + folderName);
+//        System.out.println("准备删除： " + folderName);
         //在当前目录下查找要删除的文件夹
         FCB_List _deleteFolder = fatherFolder.searchFCB_ListByName(folderName);
 
@@ -39,19 +41,25 @@ public class FCBController {
             Object object = _deleteFolder.getFcb_list().get(i);
             try {
                 SysFile file = (SysFile) object;
-                System.out.println("要先删除： " + file.getFileName());
+//                System.out.println("要先删除： " + file.getFileName());
                 fileController.deleteFile(file.getFileName(), _deleteFolder, fat_table, bitMap);
-                System.out.println("删除成功： " + file.getFileName());
+//                System.out.println("删除成功： " + file.getFileName());
             } catch (Exception e) {
                 FCB_List folder = (FCB_List) object;
-                System.out.println("要先删除： " + folder.getFcb_list_name());
+//                System.out.println("要先删除： " + folder.getFcb_list_name());
                 deleteFolder(folder.getFcb_list_name(), folder.getFatherFolder(), fat_table, bitMap);
             }
         }
 
         fatherFolder.deleteFile(_deleteFolder);
-        System.out.println("删除成功： " + _deleteFolder.getFcb_list_name());
+//        System.out.println("删除成功： " + _deleteFolder.getFcb_list_name());
 
+    }
+
+    //更新目录的名字
+    public void updateFolderName(String folderName, FCB_List fatherFolder, String newName){
+        FCB_List _updateFolder = fatherFolder.searchFCB_ListByName(folderName);
+        _updateFolder.setFcb_list_name(newName);
     }
 
 }
