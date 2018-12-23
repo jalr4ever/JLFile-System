@@ -17,6 +17,7 @@ import java.util.Scanner;
 public class SysController {
 
     private FileController fileController = new FileController();
+
     private FCBController fcbController = new FCBController();
 
     public static String currentPath = "Users:";        //当前目录逻辑路径
@@ -65,12 +66,21 @@ public class SysController {
                 if (isEnd) {
                     break;
                 }
+            } else if (param[0].equals("sf")) {     //显示FAT表
+                processShowFat(param);
+            } else if (param[0].equals("sb")) {     //显示位视图
+                processShowBitMap(param);
             } else if (param[0].equals("cf")) {     //创建文件
                 processCreateFile(param);
-            } else if (param[0].equals("cdir")) {      //创建目录
-                processCreateDir(param);
-            } else if (param[0].equals("cd")) {     //改变目录
+            } else if (param[0].equals("del")) {     //删除文件
+                processDeleteFile(param);
+            }else if (param[0].equals("cd")) {     //改变目录
                 processChangeDir(param);
+            }else if (param[0].equals("cdir")) {      //创建目录
+                processCreateDir(param);
+            }
+            else if (param[0].equals("deldir")) {     //删除目录
+                processDeleteDir(param);
             } else if (param[0].equals("ls")) {   //显示当前目录下的文件和文件夹
                 processList(param);
             } else {
@@ -106,6 +116,36 @@ public class SysController {
         }
     }
 
+    //显示fat表
+    private void processShowFat(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("SF", "显示fat表");
+            } else {
+                printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+            }
+        } else {
+            fileController.showFAT(file_allocate_table);
+        }
+    }
+
+    //显示位视图
+    private void processShowBitMap(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("SB", "显示位视图");
+            } else {
+                printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+            }
+        } else {
+            fileController.showBitMap(bitMap);
+        }
+    }
+
     //显示文件夹下所有文件
     private void processList(String[] param) {
         if (param.length > 2) {
@@ -120,37 +160,37 @@ public class SysController {
             Iterator iterator = _currentPath.getFcb_list().iterator();
             SysFile tempFile;
             FCB_List tempFolder;
-            StringBuilder sbDir=new StringBuilder();
-            StringBuilder sbFile=new StringBuilder();
+            StringBuilder sbDir = new StringBuilder();
+            StringBuilder sbFile = new StringBuilder();
             while (iterator.hasNext()) {
                 Object obj = iterator.next();
 
                 try {
                     tempFile = (SysFile) obj;
-                    int fileLength=tempFile.getFileName().getBytes().length;
-                    StringBuilder tempFileName=new StringBuilder(tempFile.getFileName());
-                    for(int i=0;i<25-fileLength;i++){
+                    int fileLength = tempFile.getFileName().getBytes().length;
+                    StringBuilder tempFileName = new StringBuilder(tempFile.getFileName());
+                    for (int i = 0; i < 25 - fileLength; i++) {
                         tempFileName.append(" ");
                     }
                     sbFile.append("** "
-                            + "文件名:\t\t" + tempFileName + "\t\t"
+                            + "文件名称:\t" + tempFileName + "\t\t"
                             + "创建日期: " + tempFile.getFileDateTime() + "\t\t"
                             + "大小: " + tempFile.getFileSize() * BitMap.disk_block_size + " b\n");
                 } catch (Exception e) {
                     tempFolder = (FCB_List) obj;
-                    int folderLength=tempFolder.getFcb_list_name().getBytes().length;
-                    StringBuilder tempFolderName=new StringBuilder(tempFolder.getFcb_list_name());
-                    for(int i=0;i<25-folderLength;i++){
+                    int folderLength = tempFolder.getFcb_list_name().getBytes().length;
+                    StringBuilder tempFolderName = new StringBuilder(tempFolder.getFcb_list_name());
+                    for (int i = 0; i < 25 - folderLength; i++) {
                         tempFolderName.append(" ");
                     }
                     sbDir.append("** "
                             + "文件夹名:\t" + tempFolderName + "\t\t"
                             + "创建日期: " + tempFolder.getFcbDateTime() + "\t\t"
-                            + "文件夹类型: " + tempFolder.getFcb_list_type()+"\n");
+                            + "文件夹类型: " + tempFolder.getFcb_list_type() + "\n");
                 }
 
             }
-            System.out.print(sbDir);
+            System.out.println(sbDir);
             System.out.print(sbFile);
         } else {
             printBlank("HELP", "获取帮助信息");
@@ -192,7 +232,9 @@ public class SysController {
             printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
-                printBlank("CDIR folderName", "创建名字为folderName的文件夹");
+                printBlank("CDIR folderName", "创建名字为folderName(不超过25个字符)的文件夹");
+            } else if (param[1].getBytes().length>25) {
+                printBlank("指定的文件夹名称超出规定长度，请更换名称", null);
             } else {
                 if (_currentPath.searchFCB_ListByName(param[1]) == null) {
                     fcbController.ceateFolder(param[1], currentPath + "/" + param[1], SysController._currentPath);
@@ -205,6 +247,26 @@ public class SysController {
         }
     }
 
+    //删除文件夹
+    private void processDeleteDir(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("DELDIR folderName", "删除名字为folderName的文件夹");
+            }else {
+                if (_currentPath.searchFCB_ListByName(param[1]) != null) {
+                    String folderName=param[1];
+                    fcbController.deleteFolder(folderName,_currentPath,file_allocate_table,bitMap);
+
+                } else {
+                    printBlank("该文件夹下没有您指定的文件夹，请检查文件夹名是否输入正确", null);
+                }
+            }
+        } else {
+            printBlank("DEL需要一个参数指定要删除的文件名", null);
+        }
+    }
 
     //创建文件
     private void processCreateFile(String[] param) {
@@ -212,8 +274,10 @@ public class SysController {
             printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
-                printBlank("CF fileName", "创建名字为fileName的文本文件，并等待输入内容,输入:end结束内容");
-            } else {
+                printBlank("CF fileName", "创建名字为fileName(不超过25个字符)的文本文件，并等待输入内容,输入:end结束内容");
+            } else if (param[1].getBytes().length>25) {
+                printBlank("指定的文件名称超出规定长度，请更换名称", null);
+            }else {
                 if (_currentPath.searchFileByName(param[1]) == null) {
                     System.out.println("请开始输入文件内容,输入:end结束内容");
                     StringBuilder sb = new StringBuilder();
@@ -224,7 +288,7 @@ public class SysController {
                     } while (!tempLine.trim().equalsIgnoreCase(":end"));
 
                     //等待调用创建文件函数
-                    fileController.createFile(param[1], sb.toString(), currentPath, _currentPath,file_allocate_table,bitMap);
+                    fileController.createFile(param[1], sb.toString(), currentPath, _currentPath, file_allocate_table, bitMap);
                     System.out.println(sb.toString());
                 } else {
                     printBlank("该名称已被占用，请更换名称重新创建文件", null);
@@ -235,6 +299,29 @@ public class SysController {
         }
 
     }
+
+
+    //删除文件
+    private void processDeleteFile(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("DEL fileName", "删除名字为fileName的文本文件");
+            }else {
+                if (_currentPath.searchFileByName(param[1]) != null) {
+                    String fileName=param[1];
+                    fileController.deleteFile(fileName, _currentPath, file_allocate_table,bitMap);
+
+                } else {
+                    printBlank("该文件夹下没有您指定的文件，请检查文件名是否输入正确", null);
+                }
+            }
+        } else {
+            printBlank("DEL需要一个参数指定要删除的文件名", null);
+        }
+    }
+
 
     //处理错误命令
     public void processError(String[] param) {
@@ -261,11 +348,15 @@ public class SysController {
 
     //打印帮助信息
     public void helpInformation() {
-        printBlank("anyCommand -HELP", "获取该命令的使用方法");
         printBlank("HELP", "获取帮助信息");
+        printBlank("anyCommand -HELP", "获取该命令的使用方法");
         printBlank("EXIT or QUIT or ESC", "退出该系统");
-        printBlank("CF fileName", "创建名字为fileName的文本文件");
-        printBlank("CDIR folderName", "创建名字为folderName的文件夹");
+        printBlank("SF", "显示fat表");
+        printBlank("SB", "显示位视图");
+        printBlank("CF fileName", "创建名字为fileName(不超过25个字符)的文本文件");
+        printBlank("DEL fileName", "删除名字为fileName的文本文件");
+        printBlank("CDIR folderName", "创建名字为folderName(不超过25个字符)的文件夹");
+        printBlank("DELDIR folderName", "删除名字为folderName的文件夹");
         printBlank("CD folderName", "进入名字为folderName的文件夹");
         printBlank("LS", "显示当前文件夹下的所有文件");
     }

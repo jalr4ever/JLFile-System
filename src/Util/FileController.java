@@ -14,7 +14,6 @@ import static Entity.BitMap.disk_block_size;
 public class FileController {
 
 
-
     public void createFile(String fileName, String fileData, String filePath, FCB_List fatherFolder, FAT fat_table, BitMap bitMap) {
 
         //0.创建当前的日期
@@ -47,7 +46,7 @@ public class FileController {
             fileSize++;
         }
 
-        newfile.setFileSize(fileSize*disk_block_size);
+        newfile.setFileSize(fileSize * disk_block_size);
 
         //3.查找位示图的空闲块, 更新相应的位示图与FAT表
         while (fileSize > 0) {
@@ -86,14 +85,48 @@ public class FileController {
         //1.找到当前目录下要删除的文件物理位置
         SysFile _deletefile = fatherFolder.searchFileByName(fileName);
 
-        //2.回收该文件的盘块号，更新位示图
+        //2.回收该文件的盘块号，查找 FAT 表，找到文件物理块号，并更新位示图的相应位置
+        int fileFirstBlock = _deletefile.getFirstBlockNum();
+        Integer fileNextBlock = fat_table.searchNextBlock(new Integer(fileFirstBlock));//拿到下一块号
+        try {
+            fat_table.setKeyMap(fileFirstBlock, -1); //更新当前块号的 FAT 表的下一块号
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("删除文件时，更新 FAT 表失败，请重试");
+        }
+        int row = fileFirstBlock / disk_block_size;
+        int column = fileFirstBlock % disk_block_size;
+        while (true) {//下一块为 -1 时代表结束
+            try {
+                bitMap.updateBitMap(row, column);
+                fileFirstBlock = fileNextBlock;//更新物理块号
+                fileNextBlock = fat_table.searchNextBlock(fileNextBlock); //更新 "下一块"物理块号
+                if(fat_table.searchNextBlock(fileFirstBlock) == null){//当前物理块号为 -1时，下一块号为空，那么退出
+                    break;
+                }
+                row = fileFirstBlock / disk_block_size;
+                column = fileFirstBlock % disk_block_size;
+                fat_table.setKeyMap(fileFirstBlock, -1);//更新 FAT 表 的下一块号
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("删除文件失败，请检查");
+            }
+        }
 
+        //3.在对应的文件夹下删除文件
+        fatherFolder.deleteFile(_deletefile);
+
+        System.out.println("\n --- 删除后的位示图 ---\n");
+        showBitMap(bitMap);
+
+        System.out.println("\n --- 删除后的FAT表 ---\n");
+        showFAT(fat_table);
     }
 
     public void showBitMap(BitMap bitMap) {
         for (int i = 0; i < bitmap_width; i++) {
             for (int j = 0; j < bitmap_height; j++) {
-                System.out.print(bitMap.getBitmap()[i][j] + "   \t");
+                System.out.print(bitMap.getBitmap()[i][j] + " \t");
             }
             System.out.println();
         }

@@ -25,9 +25,10 @@ public class FAT {
 
     public void setKeyMap(Integer blockNum, Integer nextBlockNum) throws Exception {
 
-        if (file_allocate_table.size() < (bitmap_height * bitmap_width)) {
+        if (file_allocate_table.size() <= (bitmap_height * bitmap_width)) {
             file_allocate_table.put(blockNum, nextBlockNum);
         } else {
+            System.out.println("-------------FAT 表异常时的大小：  "+file_allocate_table.size());
             throw new Exception("FAT 表的表项已达到最大值，无法继续存盘");
         }
     }
@@ -41,5 +42,10 @@ public class FAT {
 
     public void updateFileAllocateTable(Integer blockNum, Integer nextBlockNum) {
         file_allocate_table.put(new Integer(blockNum), new Integer(nextBlockNum));
+    }
+
+    public Integer searchNextBlock(Integer blockNum){
+        Integer nextBlock = file_allocate_table.get(blockNum);
+        return nextBlock;
     }
 }
