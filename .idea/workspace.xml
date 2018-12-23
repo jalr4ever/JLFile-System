@@ -81,7 +81,7 @@
       <file leaf-file-name="FileController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Util/FileController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1191">
+            <state relative-caret-position="-2447">
               <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -111,11 +111,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SysController.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SysController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Util/SysController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="990">
-              <caret line="179" column="39" selection-start-line="179" selection-start-column="39" selection-end-line="179" selection-end-column="39" />
+            <state relative-caret-position="380">
+              <caret line="393" lean-forward="true" selection-start-line="393" selection-end-line="393" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1010#1011#0" expanded="true" />
@@ -134,11 +134,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestFrame.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TestFrame.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Test/TestFrame.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="9" column="19" lean-forward="true" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+            <state relative-caret-position="226">
+              <caret line="11" column="24" lean-forward="true" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -194,10 +194,10 @@
         <option value="$PROJECT_DIR$/src/Util/UserController.java" />
         <option value="$PROJECT_DIR$/src/Entity/FCB_List.java" />
         <option value="$PROJECT_DIR$/src/Entity/FAT.java" />
-        <option value="$PROJECT_DIR$/src/Util/SysController.java" />
         <option value="$PROJECT_DIR$/src/Test/TestFrame.java" />
         <option value="$PROJECT_DIR$/src/Util/FCBController.java" />
         <option value="$PROJECT_DIR$/src/Util/FileController.java" />
+        <option value="$PROJECT_DIR$/src/Util/SysController.java" />
       </list>
     </option>
   </component>
@@ -377,12 +377,12 @@
       <updated>1545360140942</updated>
       <workItem from="1545360147150" duration="31723000" />
       <workItem from="1545446609711" duration="27639000" />
-      <workItem from="1545537555698" duration="27155000" />
+      <workItem from="1545537555698" duration="27853000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="86517000" />
+    <option name="totallyTimeSpent" value="87215000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="22" width="1616" height="886" extended-state="6" />
@@ -397,16 +397,16 @@
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="7" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.2561863" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.12518194" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.32896653" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info id="Capture Tool" order="5" />
       <window_info id="Designer" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7103718" visible="true" weight="0.27137306" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.75374377" visible="true" weight="0.27137306" />
       <window_info anchor="right" id="Database" order="6" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info id="Learn" order="2" />
-      <window_info id="Structure" order="1" sideWeight="0.28962818" side_tool="true" visible="true" weight="0.27137306" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.24625623" side_tool="true" visible="true" weight="0.27137306" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="4" />
       <window_info anchor="right" id="Theme Preview" order="5" />
@@ -709,28 +709,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Util/FileController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1191">
-          <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Util/SysController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="990">
-          <caret line="179" column="39" selection-start-line="179" selection-start-column="39" selection-end-line="179" selection-end-column="39" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1010#1011#0" expanded="true" />
-            <element signature="e#1049#1050#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Entity/BitMap.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -791,10 +769,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Test/TestFrame.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="9" column="19" lean-forward="true" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+        <state relative-caret-position="226">
+          <caret line="11" column="24" lean-forward="true" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Util/FileController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2447">
+          <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Util/SysController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="393" lean-forward="true" selection-start-line="393" selection-end-line="393" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1010#1011#0" expanded="true" />
+            <element signature="e#1049#1050#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -76,7 +76,9 @@ public class SysController {
                 processOpenFile(param);
             } else if (param[0].equals("mfn")) {     //更改文件名
                 processModifyFileName(param);
-            } else if (param[0].equals("del")) {     //删除文件
+            } else if (param[0].equals("mf")) {     //修改文件内容
+                processModifyFile(param);
+            }else if (param[0].equals("del")) {     //删除文件
                 processDeleteFile(param);
             } else if (param[0].equals("cd")) {     //进入目标目录
                 processChangeDir(param);
@@ -314,8 +316,6 @@ public class SysController {
                         sb.append(tempLine + "\n");
                         tempLine = scanner.nextLine();
                     } while (!tempLine.trim().equalsIgnoreCase(":end"));
-
-                    //等待调用创建文件函数
                     fileController.createFile(param[1], sb.toString(), currentPath, _currentPath, file_allocate_table, bitMap);
                 } else {
                     printBlank("该名称已被占用，请更换名称重新创建文件", null);
@@ -369,6 +369,37 @@ public class SysController {
             }
         } else {
             printBlank("MFN需要一个文件名参数指定文件", null);
+        }
+
+    }
+
+    //修改文件内容
+    private void processModifyFile(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("MF fileName", "修改名字为fileName的文本文件的内容");
+            } else {
+                SysFile file=_currentPath.searchFileByName(param[1]);
+                if (file != null) {
+                    System.out.println(file.getFileData());
+                    System.out.println("开始修改文件，输入:end结束修改，您要把文件内容修改为：");
+                    StringBuilder sb = new StringBuilder();
+                    String tempLine = "";
+                    do {
+                        sb.append(tempLine + "\n");
+                        tempLine = scanner.nextLine();
+                    } while (!tempLine.trim().equalsIgnoreCase(":end"));
+
+                   file.setFileData(sb.toString());
+
+                } else {
+                    printBlank("指定名字的文件不存在，请检查文件名是否输入正确", null);
+                }
+            }
+        } else {
+            printBlank("MF需要一个文件名参数指定文件", null);
         }
 
     }
@@ -428,6 +459,7 @@ public class SysController {
         printBlank("SB", "显示位视图");
         printBlank("CF fileName", "创建名字为fileName(不超过25个字符)的文本文件");
         printBlank("OF fileName", "打开名字为fileName的文本文件");
+        printBlank("MF fileName", "修改名字为fileName的文本文件的内容");
         printBlank("MFN fileName", "修改名字为fileName的文本文件的名称");
         printBlank("DEL fileName", "删除名字为fileName的文本文件");
         printBlank("CDIR folderName", "创建名字为folderName(不超过25个字符)的文件夹");
