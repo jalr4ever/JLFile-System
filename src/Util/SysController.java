@@ -61,15 +61,17 @@ public class SysController {
             if (param[0].equals("help")) {
                 processHelp(param);
             } else if (param[0].equals("exit") || param[0].equals("quit") || param[0].equals("esc")) {
-                processExit(param);
-                break;
-            } else if (param[0].equals("createfile")) {
+                boolean isEnd = processExit(param);
+                if (isEnd) {
+                    break;
+                }
+            } else if (param[0].equals("cf")) {     //创建文件
                 processCreateFile(param);
-            } else if (param[0].equals("createdir")) {
+            } else if (param[0].equals("cdir")) {      //创建目录
                 processCreateDir(param);
-            } else if (param[0].equals("cd")) {
+            } else if (param[0].equals("cd")) {     //改变目录
                 processChangeDir(param);
-            } else if (param[0].equals("list")) {
+            } else if (param[0].equals("ls")) {   //显示当前目录下的文件和文件夹
                 processList(param);
             } else {
                 processError(param);
@@ -110,7 +112,7 @@ public class SysController {
             printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
         } else if (param.length > 1) {
             if (param[1].equals("-help")) {
-                printBlank("LIST", "显示该文件夹下所有文件夹和文件");
+                printBlank("LS", "显示该文件夹下所有文件夹和文件");
             } else {
                 printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
             }
@@ -118,43 +120,57 @@ public class SysController {
             Iterator iterator = _currentPath.getFcb_list().iterator();
             SysFile tempFile;
             FCB_List tempFolder;
+            StringBuilder sbDir=new StringBuilder();
+            StringBuilder sbFile=new StringBuilder();
             while (iterator.hasNext()) {
                 Object obj = iterator.next();
+
                 try {
                     tempFile = (SysFile) obj;
-                    System.out.println("** "
-                            + "文件名: " + tempFile.getFileName() + "\t\t"
+                    int fileLength=tempFile.getFileName().getBytes().length;
+                    StringBuilder tempFileName=new StringBuilder(tempFile.getFileName());
+                    for(int i=0;i<25-fileLength;i++){
+                        tempFileName.append(" ");
+                    }
+                    sbFile.append("** "
+                            + "文件名:\t\t" + tempFileName + "\t\t"
                             + "创建日期: " + tempFile.getFileDateTime() + "\t\t"
-                            + "大小: " + tempFile.getFileSize() * BitMap.disk_block_size + " b");
+                            + "大小: " + tempFile.getFileSize() * BitMap.disk_block_size + " b\n");
                 } catch (Exception e) {
                     tempFolder = (FCB_List) obj;
-                    System.out.println("** "
-                            + "文件夹名: " + tempFolder.getFcb_list_name() + "\t\t"
+                    int folderLength=tempFolder.getFcb_list_name().getBytes().length;
+                    StringBuilder tempFolderName=new StringBuilder(tempFolder.getFcb_list_name());
+                    for(int i=0;i<25-folderLength;i++){
+                        tempFolderName.append(" ");
+                    }
+                    sbDir.append("** "
+                            + "文件夹名:\t" + tempFolderName + "\t\t"
                             + "创建日期: " + tempFolder.getFcbDateTime() + "\t\t"
-                            + "文件夹类型: " + tempFolder.getFcb_list_type());
+                            + "文件夹类型: " + tempFolder.getFcb_list_type()+"\n");
                 }
+
             }
+            System.out.print(sbDir);
+            System.out.print(sbFile);
         } else {
             printBlank("HELP", "获取帮助信息");
         }
     }
 
-
     //更改目录
     private void processChangeDir(String[] param) {
-        if (param.length > 1) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
             if (param[1].equals("-help")) {
-                printBlank("CD FOLDERNAME", "进入名字为FOLDERNAME的目录，..为父目录");
-            } else if (param.length > 2) {
-                printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+                printBlank("CD folderName", "进入名字为folderName的目录，..为父目录");
             } else {
                 FCB_List targetDir = _currentPath.searchFCB_ListByName(param[1]);
                 if (param[1].equals("..")) {
-                    if(SysController._currentPath != rootFolderMark){
+                    if (SysController._currentPath != rootFolderMark) {
                         SysController._currentPath = _currentPath.getFatherFolder();
                         SysController.currentPath = _currentPath.getFolderPath();
-                    }
-                    else{
+                    } else {
                         printBlank("无法再返回上一级，这里是根目录！", null);
                     }
                 } else if (targetDir == null) {
@@ -169,13 +185,14 @@ public class SysController {
         }
     }
 
+
     //创建文件夹
     private void processCreateDir(String[] param) {
-        if (param.length > 1) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
             if (param[1].equals("-help")) {
-                printBlank("CREATEDIR FOLDERNAME", "创建名字为FOLDERNAME的文件夹");
-            } else if (param.length > 2) {
-                printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+                printBlank("CDIR folderName", "创建名字为folderName的文件夹");
             } else {
                 if (_currentPath.searchFCB_ListByName(param[1]) == null) {
                     fcbController.ceateFolder(param[1], currentPath + "/" + param[1], SysController._currentPath);
@@ -184,17 +201,18 @@ public class SysController {
                 }
             }
         } else {
-            printBlank("CREATEDIR需要一个参数作为文件夹名称", null);
+            printBlank("CDIR需要一个参数作为文件夹名称", null);
         }
     }
 
+
     //创建文件
     private void processCreateFile(String[] param) {
-        if (param.length > 1) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
             if (param[1].equals("-help")) {
-                printBlank("CREATEFILE FILENAME", "创建名字为FILENAME的文本文件，并等待输入内容,输入:end结束内容");
-            } else if (param.length > 2) {
-                printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+                printBlank("CF fileName", "创建名字为fileName的文本文件，并等待输入内容,输入:end结束内容");
             } else {
                 if (_currentPath.searchFileByName(param[1]) == null) {
                     System.out.println("请开始输入文件内容,输入:end结束内容");
@@ -206,15 +224,16 @@ public class SysController {
                     } while (!tempLine.trim().equalsIgnoreCase(":end"));
 
                     //等待调用创建文件函数
-                    fileController.createFile(param[1], sb.toString(), currentPath, _currentPath,file_allocate_table, bitMap);
+                    fileController.createFile(param[1], sb.toString(), currentPath, _currentPath,file_allocate_table,bitMap);
                     System.out.println(sb.toString());
                 } else {
                     printBlank("该名称已被占用，请更换名称重新创建文件", null);
                 }
             }
         } else {
-            printBlank("CREATEFILE需要一个参数作为文件名", null);
+            printBlank("CF需要一个参数作为文件名", null);
         }
+
     }
 
     //处理错误命令
@@ -227,10 +246,11 @@ public class SysController {
 
     //处理帮助命令
     public void processHelp(String[] param) {
-        if (param.length > 1) {
+        if (param.length > 2) {
+            printBlank(param[0] + "命令使用错误，输入HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
             if (param[1].equals("-help")) {
                 helpInformation();
-
             } else {
                 printBlank(param[0] + "命令使用错误，输入HELP查看命令使用方法", null);
             }
@@ -239,47 +259,50 @@ public class SysController {
         }
     }
 
-    public void helpInformation(){
+    //打印帮助信息
+    public void helpInformation() {
         printBlank("anyCommand -HELP", "获取该命令的使用方法");
         printBlank("HELP", "获取帮助信息");
         printBlank("EXIT or QUIT or ESC", "退出该系统");
-        printBlank("CREATEFILE FILENAME", "创建名字为FILENAME的文本文件");
-        printBlank("CREATEDIR FOLDERNAME", "创建名字为FOLDERNAME的文件夹");
-        printBlank("CD FOLDERNAME", "进入名字为FOLDERNAME的文件夹");
-        printBlank("LIST", "显示当前文件夹下的所有文件");
+        printBlank("CF fileName", "创建名字为fileName的文本文件");
+        printBlank("CDIR folderName", "创建名字为folderName的文件夹");
+        printBlank("CD folderName", "进入名字为folderName的文件夹");
+        printBlank("LS", "显示当前文件夹下的所有文件");
     }
 
     //处理退出命令
-    public void processExit(String[] param) {
-        System.out.println("                                               :@@`            \n" +
-                "                  @@`                          '@@@            \n" +
-                "          .       @@@.                         ''@@            \n" +
-                "          @@;      @@@                         `,@@@@#         \n" +
-                "          @@@@     @@@                          '@@@@@@        \n" +
-                "         @@@@@     @@@                       .@@@@@@@@+        \n" +
-                "        #@@@@@     @@:                    #@@@@@@@@@           \n" +
-                "       @@@@@@     `@@@+                    ,@@@@@@@            \n" +
-                "     @@@@@+       :@@@@@#                   @@@@@@: ,'         \n" +
-                "    +@@@@        @@@@@@@@                +`     @@@@@@@`       \n" +
-                "    #@@@@@    @@@@@@@@@@`               #@    ;@@@@@#@@@.      \n" +
-                "    #@@@#@@   @@@@@@@;                  @@, #@@@@@;  @@@@      \n" +
-                "    ,@+ @@@: :' @@@@'                   #@@@@@@@@@@ #@@@.      \n" +
-                "       +@@@' '   .@@`   #;              ,@@@@   @@.@@@`        \n" +
-                "      :@@@# +    @@@@@@@@@,              @@@@   @@@@@@`        \n" +
-                "     @@@@@  .  +@@@@@@@@@@+               #@@@@@@@@#;.         \n" +
-                "    ,@@@@@@@#@@@@@@@@#.  ,                 @@@@@@@             \n" +
-                "    :@@@@@@@@@@@'@'                        :@@@`@@             \n" +
-                "    `@@+@@@.@#  @   ,@@                     @@;;@@             \n" +
-                "     @` @@@    @@ '@@@@@                   #@@+@@@@@@.         \n" +
-                "       ,@@+   ,@@@@@@@@@@                #;@@   @@@@@@@@#      \n" +
-                "       @@@    #@@@@@  @@@                `@@:   @@   +@@@@@    \n" +
-                "       @@@    #@@    #@@+               #@@;    @@     ,@@@@   \n" +
-                "      @@@.    +@@    @@@              +@@@   , `@@       #@@@  \n" +
-                "      @@@     ,@@  ;@@@                      `@:@@         +@  \n" +
-                "      @@'      @@@@@@@@                       @@@@             \n" +
-                "      @@       @@@@@@@@`                      `@@@             \n" +
-                "      ,`        @`                             #@@             \n" +
-                "                                                @#    ");
+    public boolean processExit(String[] param) {
+        if (param.length > 2) {
+            printBlank("命令使用错误，输入-HELP查看命令使用方法", null);
+        } else if (param.length > 1) {
+            if (param[1].equals("-help")) {
+                printBlank("EXIT or QUIT or ESC", "退出该系统");
+            }
+        } else {
+            System.out.println("                      __------__\n" +
+                    "                    /~    结束  ~\\\n" +
+                    "                   |    //^\\\\//^\\|\n" +
+                    "                 /~~\\  ||  o| |o|:~\\\n" +
+                    "                | |6   ||___|_|_||:|\n" +
+                    "                 \\__.  /      o  \\/'\n" +
+                    "                  |   (       O   )\n" +
+                    "         /~~~~\\    `\\  \\         /\n" +
+                    "        | |~~\\ |     )  ~------~`\\\n" +
+                    "       /' |  | |   /     ____ /~~~)\\\n" +
+                    "      (_/'   | | |     /'    |    ( |\n" +
+                    "             | | |     \\    /   __)/ \\\n" +
+                    "             \\  \\ \\      \\/    /' \\   `\\\n" +
+                    "               \\  \\|\\        /   | |\\___|\n" +
+                    "                 \\ |  \\____/     | |\n" +
+                    "                 /^~>  \\        _/ <\n" +
+                    "                |  |         \\       \\\n" +
+                    "                |  | \\        \\        \\\n" +
+                    "                -^-\\  \\       |        )\n" +
+                    "                     `\\_______/^\\______/");
+            return true;
+        }
+        return false;
     }
+
 
 }

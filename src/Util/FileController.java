@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static Entity.BitMap.bitmap_height;
 import static Entity.BitMap.bitmap_width;
+import static Entity.BitMap.disk_block_size;
 
 public class FileController {
 
@@ -45,6 +46,8 @@ public class FileController {
         if ((fileLength % bitMap.getFile_block_size()) != 0) {
             fileSize++;
         }
+
+        newfile.setFileSize(fileSize*disk_block_size);
 
         //3.查找位示图的空闲块, 更新相应的位示图与FAT表
         while (fileSize > 0) {
@@ -84,7 +87,6 @@ public class FileController {
         SysFile _deletefile = fatherFolder.searchFileByName(fileName);
 
         //2.回收该文件的盘块号，更新位示图
-
 
     }
 
