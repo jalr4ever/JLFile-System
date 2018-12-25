@@ -391,8 +391,7 @@ public class SysController {
                         sb.append(tempLine + "\n");
                         tempLine = scanner.nextLine();
                     } while (!tempLine.trim().equalsIgnoreCase(":end"));
-
-                   file.setFileData(sb.toString());
+                    fileController.updateFileContent(file.getFileName(),file.getFolderFather(),sb.toString());
 
                 } else {
                     printBlank("指定名字的文件不存在，请检查文件名是否输入正确", null);

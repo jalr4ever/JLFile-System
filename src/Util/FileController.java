@@ -150,6 +150,7 @@ public class FileController {
         }
     }
 
+    //查找位视图中第一个可用的磁盘块
     public int checkBitMap(BitMap bitMap) {
         for (int i = 0; i < bitmap_width; i++) {
             for (int j = 0; j < bitmap_height; j++) {
@@ -159,6 +160,11 @@ public class FileController {
             }
         }
         return -1; //代表没有可用的
+    }
+
+    public void updateFileContent(String fileName, FCB_List fatherFolder,String newContent){
+        SysFile _updateFile = fatherFolder.searchFileByName(fileName);
+        _updateFile.setFileData(newContent);
     }
 
 }
