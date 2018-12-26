@@ -171,7 +171,6 @@ public class SysController {
             StringBuilder sbFile = new StringBuilder();
             while (iterator.hasNext()) {
                 Object obj = iterator.next();
-
                 try {
                     tempFile = (SysFile) obj;
                     int fileLength = tempFile.getFileName().getBytes().length;
@@ -316,7 +315,7 @@ public class SysController {
                         sb.append(tempLine + "\n");
                         tempLine = scanner.nextLine();
                     } while (!tempLine.trim().equalsIgnoreCase(":end"));
-                    fileController.createFile(param[1], sb.toString(), currentPath, _currentPath, file_allocate_table, bitMap);
+                    fileController.createFile(param[1], sb.substring(1,sb.length()-1), currentPath, _currentPath, file_allocate_table, bitMap);
                 } else {
                     printBlank("该名称已被占用，请更换名称重新创建文件", null);
                 }
@@ -384,14 +383,14 @@ public class SysController {
                 SysFile file=_currentPath.searchFileByName(param[1]);
                 if (file != null) {
                     System.out.println(file.getFileData());
-                    System.out.println("开始修改文件，输入:end结束修改，您要把文件内容修改为：");
+                    System.out.println("** 开始修改文件，输入:end结束修改，您要把文件内容修改为：");
                     StringBuilder sb = new StringBuilder();
                     String tempLine = "";
                     do {
                         sb.append(tempLine + "\n");
                         tempLine = scanner.nextLine();
                     } while (!tempLine.trim().equalsIgnoreCase(":end"));
-                    fileController.updateFileContent(file.getFileName(),file.getFolderFather(),sb.toString());
+                    fileController.updateFileContent(file.getFileName(),file.getFolderFather(),sb.substring(1,sb.length()-1));
 
                 } else {
                     printBlank("指定名字的文件不存在，请检查文件名是否输入正确", null);

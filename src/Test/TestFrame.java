@@ -18,8 +18,8 @@ public class TestFrame {
 //        controller.showBitMap();
 //        controller.createFile("JALRHOME","HAHAHA");
 
-        SysController sysController=new SysController();
-        sysController.start();
+//        SysController sysController=new SysController();
+//        sysController.start();
 
 
     }
